@@ -2,6 +2,7 @@
 
 ### Latest release
 
+[![CRAN version](http://www.r-pkg.org/badges/version/corehunter)](https://CRAN.R-project.org/package=corehunter)
 [![Coverage Status](http://img.shields.io/coveralls/corehunter/corehunter3-r/master.svg)](https://coveralls.io/r/corehunter/corehunter3-r)
 [![Build Status](https://img.shields.io/travis/corehunter/corehunter3-r/master.svg)](https://travis-ci.org/corehunter/corehunter3-r)
 
@@ -10,8 +11,10 @@
 [![Coverage Status](http://img.shields.io/coveralls/corehunter/corehunter3-r/develop.svg)](https://coveralls.io/r/corehunter/corehunter3-r)
 [![Build Status](https://img.shields.io/travis/corehunter/corehunter3-r/develop.svg)](https://travis-ci.org/corehunter/corehunter3-r)
 
-Core Hunter 3 is a flexible tool for multi-purpose core subset selection. Version 3 has been recoded from scratch using the [JAMES framework](http://www.jamesframework.org) which provides the applied optimization algorithms. A lot of new features have been added such as the ability to sample cores based on multiple types of genetic marker data, phenotypic traits or a precomputed distance matrix. New and improved evaluation measures were also included, that can be separately or simultaneously optimized.
+Core Hunter is a tool to sample diverse, representative subsets from large germplasm collections, with minimum redundancy. Such so-called core collections have applications in plant breeding and genetic resource management in general. Core Hunter can construct cores based on genetic marker data, phenotypic traits or precomputed distance matrices, optimizing one of many provided evaluation measures depending on the precise purpose of the core (e.g. high diversity, representativeness, or allelic richness). In addition, multiple measures can be simultaneously optimized as part of a weighted index to bring the different perspectives closer together. The Core Hunter library is implemented in Java 8 as an open source project (see 
+<http://www.corehunter.org>).
 
+Version 3 has been recoded from scratch using the [JAMES framework](http://www.jamesframework.org) which provides the applied optimization algorithms.
 Requirements
 ------------
 
@@ -60,7 +63,7 @@ Many examples are included in the package as well.
 Supported data types
 --------------------
 
-Core Hunter 3 supports multiple types of genetic marker data, phenotypic traits and precomputed distance matrices. See http://www.corehunter.org for more details. Data can be loaded from files, data frames and matrices.
+Core Hunter 3 supports multiple types of genetic marker data, phenotypic traits and precomputed distance matrices. See <http://www.corehunter.org> for more details. Data can be loaded from files, data frames and matrices.
 
 Evaluation measures
 -------------------

@@ -6,7 +6,15 @@
 \alias{corehunter-package}
 \title{Core Hunter 3}
 \description{
-A fast and flexible core subset selection tool.
+Core Hunter is a tool to sample diverse, representative subsets from large germplasm
+collections, with minimum redundancy. Such so-called core collections have applications in plant
+breeding and genetic resource management in general. Core Hunter can construct cores based on
+genetic marker data, phenotypic traits or precomputed distance matrices, optimizing one of many
+provided evaluation measures depending on the precise purpose of the core (e.g. maximum diversity,
+representativeness, or allelic richness). In addition, multiple measures can be simultaneously
+optimized as part of a weighted index to bring the different perspectives closer together.
+The Core Hunter library is implemented in Java 8 as an open source project
+(see \url{http://www.corehunter.org}).
 }
 \examples{
 \dontrun{
