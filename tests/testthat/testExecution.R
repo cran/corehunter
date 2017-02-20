@@ -50,7 +50,7 @@ test_that("default objectives", {
 })
 
 test_that("result contains indices or names", {
-  geno <- genotypeData(dataset = "small")
+  geno <- genotypeData(size = "small")
   obj <- objective("EE", "MR")
   core.ids <- testSampleCore(geno, obj, size = 3)
   core.ind <- testSampleCore(geno, obj, size = 3, indices = TRUE)

@@ -1,7 +1,7 @@
 Package: corehunter
 Title: Multi-Purpose Core Subset Selection
-Version: 3.0.1
-Date: 2016-10-04
+Version: 3.1.0
+Date: 2017-01-27
 Authors@R: c(person("Herman", "De Beukelaer", email = "herman.debeukelaer@gmail.com", role = c("aut", "cre")),
              person("Guy", "Davenport", email = "daveneti@gmail.com", role = "aut"),
              person("Veerle", "Fack", email = "veerle.fack@ugent.be", role = "ths"))
@@ -23,10 +23,10 @@ RoxygenNote: 5.0.1
 Suggests: testthat, StatMatch
 Encoding: UTF-8
 NeedsCompilation: no
-Packaged: 2016-10-04 13:42:49 UTC; hdbeukel
+Packaged: 2017-02-20 17:32:53 UTC; hdbeukel
 Author: Herman De Beukelaer [aut, cre],
   Guy Davenport [aut],
   Veerle Fack [ths]
 Maintainer: Herman De Beukelaer <herman.debeukelaer@gmail.com>
 Repository: CRAN
-Date/Publication: 2016-10-04 16:13:09
+Date/Publication: 2017-02-20 19:15:04

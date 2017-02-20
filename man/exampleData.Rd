@@ -2,12 +2,13 @@
 % Please edit documentation in R/data.R
 \name{exampleData}
 \alias{exampleData}
-\title{Example dataset with 218 individuals.}
+\title{Small example dataset with 218 individuals.}
 \source{
 Cerón-Rojas, J. Jesús ; Crossa, José; Arief, Vivi N.; Kaye Basford;
         Rutkoski, Jessica; Jarquín, Diego ; Alvarado, Gregorio; Beyene, Yoseph;
         Semagn, Kassa ; DeLacy, Ian, 2015-06-04, "Application of a Genomics
-        Selection Index to Real and Simulated Data", \url{http://hdl.handle.net/11529/10199} V10
+        Selection Index to Real and Simulated Data",
+        \url{http://hdl.handle.net/11529/10199} V10
 }
 \usage{
 exampleData()
@@ -16,12 +17,13 @@ exampleData()
 Core Hunter data of class \code{chdata}
 }
 \description{
+Data was genotyped using 190 SNP markers and 4 quantitative traits were recorded.
 Includes a precomputed distance matrix read from \code{"extdata/distances.csv"},
-genotypes read from \code{"extdata/genotypes.csv"} and phenotypes read from
-\code{"extdata/phenotypes.csv"}.
+genotypes read from \code{"extdata/genotypes-biparental.csv"} and phenotypes read
+from \code{"extdata/phenotypes.csv"}.
+The distance matrix is computed from the genotypes (Modified Rogers' distance).
 }
 \details{
-The distance matrix is computed from the genotypes (Modified Rogers' distance).
 Data was taken from the CIMMYT Research Data Repository (Study Global ID
 hdl:11529/10199; real data set 5, cycle 0).
 }

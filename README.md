@@ -29,41 +29,22 @@ The package `corehunter` can be installed from CRAN with
 > install.packages("corehunter")
 ```
 
-Afterwards, load the package
+All provided functions are documented in the package, including many examples, for example try
 
 ```R
-> library(corehunter)
-```
-
-and add your data, e.g.
-
-```R
-> my.genotypes <- genotypes(file = "path/to/file")
-```
-
-Sampling a core collection is then as easy as
-
-```R
-> sampleCore(my.genotypes)
-```
-
-There are numerous options when sampling a core. For example, you can change the size of the core (defaults to 20%), optimize a specific measure (defaults to average entry-to-nearest-entry distance), maximize a weighted index including multiple measures, change stop conditions (by default, the algorithm stops when it was unable to further improve the core during the last 10 seconds), etc. All functions have detailed documentation, for example try
-
-```R
+> ?corehunter
 > ?sampleCore
-> ?objective
 > ?genotypes
 > ?phenotypes
 > ?distances
-> ?coreHunterData
 ```
 
-Many examples are included in the package as well.
+For more information please visit <http://www.corehunter.org>.
 
 Supported data types
 --------------------
 
-Core Hunter 3 supports multiple types of genetic marker data, phenotypic traits and precomputed distance matrices. See <http://www.corehunter.org> for more details. Data can be loaded from files, data frames and matrices.
+Core Hunter 3 supports multiple types of genetic marker data, phenotypic traits and precomputed distance matrices. See <http://www.corehunter.org/data> for more details. Data can be loaded from files, data frames and matrices.
 
 Evaluation measures
 -------------------

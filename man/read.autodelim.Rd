@@ -5,7 +5,7 @@
 \title{Read delimited file.}
 \usage{
 read.autodelim(file, row.names = 1, check.names = FALSE,
-  stringsAsFactors = FALSE, strip.white = TRUE, ...)
+  stringsAsFactors = FALSE, strip.white = TRUE, quote = "'\\"", ...)
 }
 \arguments{
 \item{file}{File path.}
@@ -41,6 +41,12 @@ read.autodelim(file, row.names = 1, check.names = FALSE,
     are always stripped).  See \code{\link{scan}} for further details
     (including the exact meaning of \sQuote{white space}),
     remembering that the columns may include the row names.}
+
+\item{quote}{the set of quoting characters. To disable quoting
+    altogether, use \code{quote = ""}.  See \code{\link{scan}} for the
+    behaviour on quotes embedded in quotes.  Quoting is only considered
+    for columns read as character, which is all of them unless
+    \code{colClasses} is specified.}
 
 \item{...}{Further arguments to be passed to  \code{\link{read.delim}}.}
 }

@@ -67,7 +67,7 @@ ranges <- getNormalizationRanges(data, obj = objectives, mode = "fast")
 
 # set normalization ranges and sample core
 objectives <- lapply(1:2, function(o){setRange(objectives[[o]], ranges[o,])})
-sampleCore(data, obj = objectives)
+core <- sampleCore(data, obj = objectives)
 }
 
 }

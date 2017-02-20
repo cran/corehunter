@@ -76,33 +76,33 @@ data <- exampleData()
 
 # default size, maximize entry-to-nearest-entry Modified Rogers distance
 obj <- objective("EN", "MR")
-sampleCore(data, obj)
+core <- sampleCore(data, obj)
 
 # fast mode
-sampleCore(data, obj, mode = "f")
+core <- sampleCore(data, obj, mode = "f")
 # absolute size
-sampleCore(data, obj, size = 25)
+core <- sampleCore(data, obj, size = 25)
 # relative size
-sampleCore(data, obj, size = 0.1)
+core <- sampleCore(data, obj, size = 0.1)
 
 # other objective: minimize accession-to-nearest-entry precomputed distance
-sampleCore(data, obj = objective(type = "AN", measure = "PD"))
+core <- sampleCore(data, obj = objective(type = "AN", measure = "PD"))
 # multiple objectives (equal weight)
-sampleCore(data, obj = list(
+core <- sampleCore(data, obj = list(
  objective("EN", "PD"),
  objective("AN", "GD")
 ))
 # multiple objectives (custom weight)
-sampleCore(data, obj = list(
+core <- sampleCore(data, obj = list(
  objective("EN", "PD", weight = 0.3),
  objective("AN", "GD", weight = 0.7)
 ))
 
 # custom stop conditions
-sampleCore(data, obj, time = 5, impr.time = 2)
+core <- sampleCore(data, obj, time = 5, impr.time = 2)
 
 # print progress messages
-sampleCore(data, obj, verbose = TRUE)
+core <- sampleCore(data, obj, verbose = TRUE)
 }
 
 }

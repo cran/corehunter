@@ -4,8 +4,7 @@
 \alias{genotypes}
 \title{Create Core Hunter genotype data from data frame, matrix or file.}
 \usage{
-genotypes(data, alleles, file, format = c("default", "biparental",
-  "frequency"))
+genotypes(data, alleles, file, format)
 }
 \arguments{
 \item{data}{Data frame or matrix containing the genotypes (individuals x markers)
@@ -28,17 +27,25 @@ depending on the chosen format:
   \item{\code{frequency}}{
     Numeric matrix or data frame. One row per individual (or bulk sample) and multiple
     columns per marker. Data consists of allele frequencies, grouped per marker in
-    consecutive columns with the same name (marker name). The allele frequencies of
-    each marker should sum to one in each sample.
+    consecutive columns named after the corresponding marker, optionally extended
+    with an arbitrary suffix starting witha dot (\code{.}), dash (\code{-}) or
+    underscore (\code{_}) character.. The allele frequencies of each marker should
+    sum to one in each sample. Unique row names (item ids) are required.
   }
   In case a data frame is provided, an optional first column \code{NAME}
   may be included to specify item names. The remaining columns should follow
-  the format of the matrix or data frame described above.
+  the format as described above.
   See \url{www.corehunter.org} for more details about the supported genotype formats.
+  Note that both the \code{frequency} and \code{biparental} format syntactically also
+  comply with the \code{default} format but with different semantics, meaning that it
+  is very important to specify the correct format. Some checks have been built in that
+  raise warnings in case it seems that the wrong format might have been specified based
+  on an inspection of the data. If you are sure that you have selected the correct format
+  these warnings, if any, can be safely ignored.
 }}
 
 \item{alleles}{Allele names per marker (\code{character} vector).
-Optional and ignored for all formats except \code{frequency}.
+Ignored except when creating \code{frequency} data from a matrix or data frame.
 Allele names should be ordered in correspondence with the data columns.}
 
 \item{file}{File containing the genotype data.}
@@ -46,20 +53,27 @@ Allele names should be ordered in correspondence with the data columns.}
 \item{format}{Genotype data format, one of \code{default}, \code{biparental} or \code{frequency}.}
 }
 \value{
-Genotype data of class \code{chdist} with elements
+Genotype data of class \code{chgeno} with elements
 \describe{
  \item{\code{data}}{Genotypes. Data frame for default format, \code{numeric} matrix for other formats.}
  \item{\code{size}}{Number of individuals in the dataset.}
  \item{\code{ids}}{Unique item identifiers (\code{character}).}
  \item{\code{names}}{Item names (\code{character}). Names of individuals to which no explicit name
    has been assigned are equal to the unique \code{ids}.}
- \item{\code{markers}}{Marker names (\code{character}, if specified).
-   Marker names are required for the \code{default} and \code{frequency} format
-   but optional for the \code{biparental} format.}
- \item{\code{alleles}}{List of character vectors with allele names per marker
-   (inferred from the data, or manually specified for the \code{frequency}
-   format through the optional \code{alleles} argument).}
+ \item{\code{markers}}{Marker names (\code{character}).
+   May contain \code{NA} values in case only some or no marker names were specified.
+   Marker names are always included for the \code{default} and \code{frequency} format
+   but are optional for the \code{biparental} format.}
+ \item{\code{alleles}}{List of character vectors with allele names per marker.
+   Vectors may contain \code{NA} values in case only some or no allele names were
+   specified. For \code{biparental} data the two alleles are name \code{"0"} and
+   \code{"1"}, respectively, for all markers. For the \code{default} format allele
+   names are inferred from the provided data. Finally, for \code{frequency} data
+   allele names are optional and may be specified either in the file or through
+   the \code{alleles} argument when creating this type of data from a matrix or
+   data frame.}
  \item{\code{java}}{Java version of the data object.}
+ \item{\code{format}}{Genotype data format used.}
  \item{\code{file}}{Normalized path of file from which data was read (if applicable).}
 }
 }
@@ -84,9 +98,9 @@ geno.data <- data.frame(
  M4.2 = c(NA,"-","+","-","-"),
  row.names = paste("g", 1:5, sep = "-")
 )
-geno <- genotypes(geno.data)
+geno <- genotypes(geno.data, format = "default")
 
-# biparental
+# biparental (e.g. SNP)
 geno.data <- matrix(
  sample(c(0,1,2), replace = TRUE, size = 1000),
  nrow = 10, ncol = 100
@@ -111,9 +125,9 @@ geno <- genotypes(geno.data, alleles, format = "frequency")
 
 # default format
 geno.file <- system.file("extdata", "genotypes.csv", package = "corehunter")
-geno <- genotypes(file = geno.file)
+geno <- genotypes(file = geno.file, format = "default")
 
-# biparental
+# biparental (e.g. SNP)
 geno.file <- system.file("extdata", "genotypes-biparental.csv", package = "corehunter")
 geno <- genotypes(file = geno.file, format = "biparental")
 

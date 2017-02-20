@@ -15,26 +15,22 @@ testData <- function(){
     phenotypes = phenotypeData()
   )
 }
-distanceData <- function(dataset = c("default", "small")){
-  dataset <- match.arg(dataset)
-  if(dataset == "small"){
+distanceData <- function(size = c("default", "small")){
+  size <- match.arg(size)
+  if(size == "small"){
     distances(file = "data/distances-small.txt")
   } else {
     distances(file = distanceFile())
   }
 }
-genotypeData <- function(dataset = c("default", "small"), format = c("default", "biparental", "frequency")){
-  dataset <- match.arg(dataset)
+genotypeData <- function(size = c("default", "small"), format = c("default", "biparental", "frequency")){
+  size <- match.arg(size)
   format <- match.arg(format)
-  if(dataset == "small"){
-    genotypes(file = "data/genotypes-small.csv")
-  } else {
-    genotypes(file = genotypeFile(format), format = format)
-  }
+  genotypes(file = genotypeFile(size, format), format = format)
 }
-phenotypeData <- function(dataset = c("default", "small")){
-  dataset <- match.arg(dataset)
-  if(dataset == "small"){
+phenotypeData <- function(size = c("default", "small")){
+  size <- match.arg(size)
+  if(size == "small"){
     phenotypes(file = "data/phenotypes-small.csv")
   } else {
     phenotypes(file = phenotypeFile())
@@ -45,23 +41,32 @@ distanceFile <- function(){
   getFile("distances.csv")
 }
 
-genotypeFile <- function(format = c("default", "biparental", "frequency")){
+genotypeFile <- function(size = c("default", "small"), format = c("default", "biparental", "frequency")){
+  size <- match.arg(size)
   format <- match.arg(format)
-  file <- switch(format,
-    "default" = "genotypes.csv",
-    "biparental" = "genotypes-biparental.csv",
-    "frequency" = "genotypes-frequency.csv"
-  )
-  getFile(file)
+  if(size == "default"){
+    file <- getFile(switch(format,
+      "default" = "genotypes.csv",
+      "biparental" = "genotypes-biparental.csv",
+      "frequency" = "genotypes-frequency.csv"
+    ))
+  } else {
+    file <- switch(format,
+     "default" = "data/genotypes-small.csv",
+     "biparental" = "data/genotypes-bi-small.csv",
+     "frequency" = "data/genotypes-freq-small.csv"
+    )
+  }
+  return(file)
 }
 
 phenotypeFile <- function(){
   getFile("phenotypes.csv")
 }
 
-getIds <- function(dataset = c("default", "small")){
-  dataset <- match.arg(dataset)
-  if(dataset == "default"){
+getIds <- function(size = c("default", "small")){
+  size <- match.arg(size)
+  if(size == "default"){
     ids <- as.character(1:218)
   } else {
     ids <- c("Alice", "Dave", "Bob-1", "Bob-2", "Carol")
@@ -69,9 +74,9 @@ getIds <- function(dataset = c("default", "small")){
   return(ids)
 }
 
-getNames <- function(dataset = c("default", "small")){
-  dataset <- match.arg(dataset)
-  if(dataset == "default"){
+getNames <- function(size = c("default", "small")){
+  size <- match.arg(size)
+  if(size == "default"){
     names <- c("Bred_0003", "Bred_0004", "Bred_0005", "Bred_0006", "Bred_0013",
                "Bred_0014", "Bred_0016", "Bred_0017", "Bred_0021", "Bred_0022",
                "Bred_0023", "Bred_0024", "Bred_0026", "Bred_0027", "Bred_0028",
@@ -122,9 +127,9 @@ getNames <- function(dataset = c("default", "small")){
   return(names)
 }
 
-getMarkerNames <- function(dataset = c("default", "small")){
-  dataset <- match.arg(dataset)
-  if(dataset == "default"){
+getMarkerNames <- function(size = c("default", "small")){
+  size <- match.arg(size)
+  if(size == "default"){
     names <- paste("M", 1:190, sep = "")
   } else {
     names <- c("mk1", "mk2", "mk3", "mk4")
@@ -132,9 +137,9 @@ getMarkerNames <- function(dataset = c("default", "small")){
   return(names)
 }
 
-getRanges <- function(dataset = c("default", "small")){
-  dataset <- match.arg(dataset)
-  if(dataset == "default"){
+getRanges <- function(size = c("default", "small")){
+  size <- match.arg(size)
+  if(size == "default"){
     ranges <- c(9.6254, 86.1488316, 49.7700584, 8.2565)
   } else {
     ranges <- c(NA, NA, 10, 2.0, NA)

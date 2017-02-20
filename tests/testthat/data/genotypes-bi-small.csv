@@ -1,0 +1,6 @@
+ID     , NAME   , "mk1", mk2, mk3, mk4
+Alice  , Alice  , 1    , 0  , 2  , 1  
+Dave   ,        , 2    , 0  , 2  , 0  
+"Bob-1", 'Bob'  , 1    , 0  ,    , 0  
+Bob-2  , Bob    , 1    , 0  , 1  , 1  
+'Carol', "Carol", 1    , 0  ,    , 0  
