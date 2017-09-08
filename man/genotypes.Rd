@@ -28,7 +28,7 @@ depending on the chosen format:
     Numeric matrix or data frame. One row per individual (or bulk sample) and multiple
     columns per marker. Data consists of allele frequencies, grouped per marker in
     consecutive columns named after the corresponding marker, optionally extended
-    with an arbitrary suffix starting witha dot (\code{.}), dash (\code{-}) or
+    with an arbitrary suffix starting with a dot (\code{.}), dash (\code{-}) or
     underscore (\code{_}) character.. The allele frequencies of each marker should
     sum to one in each sample. Unique row names (item ids) are required.
   }
@@ -136,4 +136,3 @@ geno.file <- system.file("extdata", "genotypes-frequency.csv", package = "corehu
 geno <- genotypes(file = geno.file, format = "frequency")
 
 }
-

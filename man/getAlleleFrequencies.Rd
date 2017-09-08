@@ -15,4 +15,3 @@ allele frequency matrix
 \description{
 Get Allele frequency matrix.
 }
-

@@ -27,4 +27,7 @@ The distance matrix is computed from the genotypes (Modified Rogers' distance).
 Data was taken from the CIMMYT Research Data Repository (Study Global ID
 hdl:11529/10199; real data set 5, cycle 0).
 }
+\examples{
+exampleData()
 
+}

@@ -114,6 +114,8 @@ test_that("print", {
   data <- distanceData(size = "small")
   expect_output(print(data), "# Precomputed distance matrix")
   expect_output(print(data), "accessions = 5")
+  expect_output(print(data), 'Ids: chr \\[1:5\\] "Alice" "Dave" "Bob" "Bob\'" "Carol"')
+  expect_output(print(data), 'Names: chr \\[1:5\\] "Alice" "Dave" "Bob" "Bob" "Carol"')
   expect_output(print(data), "testthat[\\/]*data[\\/]*distances-small.txt")
 })
 
@@ -477,7 +479,10 @@ test_that("print", {
   data <- genotypeData(format = "default", size = "small")
   expect_output(print(data), "# Genotypes")
   expect_output(print(data), "accessions = 5")
+  expect_output(print(data), 'Ids: chr \\[1:5\\] "Alice" "Dave" "Bob" "Bob\'" "Carol"')
+  expect_output(print(data), 'Names: chr \\[1:5\\] "Alice" "Dave" "Bob" "Bob" "Carol"')
   expect_output(print(data), "markers = 4")
+  expect_output(print(data), 'Marker names: chr \\[1:4\\] "mk1" "mk,2" "mk\'3" "mk4"')
   expect_output(print(data), "alleles per marker = 2-4")
   expect_output(print(data), "Format = default")
   expect_output(print(data), "testthat[\\/]*data[\\/]*genotypes-small.csv")
@@ -485,7 +490,10 @@ test_that("print", {
   data <- genotypeData(format = "biparental", size = "small")
   expect_output(print(data), "# Genotypes")
   expect_output(print(data), "accessions = 5")
+  expect_output(print(data), 'Ids: chr \\[1:5\\] "Alice" "Dave" "Bob" "Bob\'" "Carol"')
+  expect_output(print(data), 'Names: chr \\[1:5\\] "Alice" "Dave" "Bob" "Bob" "Carol"')
   expect_output(print(data), "markers = 4")
+  expect_output(print(data), 'Marker names: chr \\[1:4\\] "mk1" "mk,2" "mk\'3" "mk4"')
   expect_output(print(data), "alleles per marker = 2")
   expect_output(print(data), "Format = biparental")
   expect_output(print(data), "testthat[\\/]*data[\\/]*genotypes-bi-small.csv")
@@ -493,7 +501,10 @@ test_that("print", {
   data <- genotypeData(format = "freq", size = "small")
   expect_output(print(data), "# Genotypes")
   expect_output(print(data), "accessions = 5")
+  expect_output(print(data), 'Ids: chr \\[1:5\\] "Alice" "Dave" "Bob" "Bob\'" "Carol"')
+  expect_output(print(data), 'Names: chr \\[1:5\\] "Alice" "Dave" "Bob" "Bob" "Carol"')
   expect_output(print(data), "markers = 4")
+  expect_output(print(data), 'Marker names: chr \\[1:4\\] "mk1" "mk,2" "mk\'3" "mk4"')
   expect_output(print(data), "alleles per marker = 2-4")
   expect_output(print(data), "Format = frequency")
   expect_output(print(data), "testthat[\\/]*data[\\/]*genotypes-freq-small.csv")
@@ -554,8 +565,6 @@ test_that("read phenotype data from file", {
   # 2: small dataset
   pheno <- phenotypeData(size = "small")
   expect_equal(pheno$size, 5)
-  # TODO: some tests below fail due to an issue in the Core Hunter
-  #       (ids and names are not unquoted when reading phenotypes from a file)
   expect_equal(pheno$ids, getIds(size = "small"))
   expect_equal(rownames(pheno$data), pheno$ids)
   expect_equal(pheno$names, getNames(size = "small"))
@@ -574,6 +583,18 @@ test_that("read phenotype data from file", {
   gd <- StatMatch::gower.dist(pheno$data, rngs = pheno$ranges)
   gd <- gd[lower.tri(gd)]
   expect_equal(mean(gd), evaluateCore(1:5, pheno, objective("EE", "GD")))
+})
+
+test_that("phenotype file with single trait", {
+  pheno.file <- "data/phenotypes-single.csv"
+  pheno <- phenotypes(file = pheno.file)
+  expect_equal(pheno$file, normalizePath(pheno.file))
+  expect_equal(pheno$size, 10)
+  expect_equal(pheno$ids, as.character(1:10))
+  expect_equal(rownames(pheno$data), pheno$ids)
+  expect_equal(pheno$names, c("ABBUOTO", "ABRUSCO", "AGLIANICO", "ALBANA", "ALBANELLO", "ALBAROSSA",
+                              "UVA_MELONA", "ALBARANZEULI_BIANCO", "ALEATICO", "ALICANTE_BOUSCHET"))
+  expect_equal(pheno$ranges, 17.5)
 })
 
 test_that("create phenotype data from data frame", {
@@ -654,6 +675,15 @@ test_that("create phenotype data from data frame", {
   pheno <- phenotypes(df)
   expect_equal(pheno$names, letters[1:5])
 
+  # single trait
+  df <- df[, "r", drop = FALSE]
+  pheno <- phenotypes(df)
+  expect_equal(pheno$size, 5)
+  expect_equal(pheno$ids, as.character(1:5))
+  expect_equal(pheno$names, as.character(1:5))
+  expect_equal(pheno$types, "R")
+  expect_equal(pheno$ranges, max(df$r) - min(df$r))
+
 })
 
 test_that("print", {
@@ -661,16 +691,18 @@ test_that("print", {
   expect_output(print(data), "# Phenotypes")
   expect_output(print(data), "accessions = 218")
   expect_output(print(data), "traits = 4")
-  expect_output(print(data), "qualitative traits = 0")
-  expect_output(print(data), "quantitative traits = 4")
+  expect_output(print(data), 'Traits: "GY" "PHT" "EHT" "AD"')
+  expect_output(print(data), 'Quantitative traits: "GY" "PHT" "EHT" "AD"')
+  expect_output(print(data), 'Qualitative traits: n/a')
   expect_output(print(data), "extdata[\\/]*phenotypes.csv")
 
   data <- phenotypeData(size = "small")
   expect_output(print(data), "# Phenotypes")
   expect_output(print(data), "accessions = 5")
   expect_output(print(data), "traits = 5")
-  expect_output(print(data), "qualitative traits = 2")
-  expect_output(print(data), "quantitative traits = 3")
+  expect_output(print(data), 'Traits: "trait 1" "trait 2" "trait 3" "trait 4" "trait 5"')
+  expect_output(print(data), 'Quantitative traits: "trait 2" "trait 3" "trait 4"')
+  expect_output(print(data), 'Qualitative traits: "trait 1" "trait 5"')
   expect_output(print(data), "testthat[\\/]*data[\\/]*phenotypes-small.csv")
 })
 

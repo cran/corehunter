@@ -67,6 +67,117 @@ test_that("multiple objectives", {
   )))
 })
 
+test_that("seed is respected", {
+  geno <- genotypeData()
+  cores <- lapply(1:5, function(i){
+    set.seed(42)
+    naturalsort(sampleCore(geno, size = 2, steps = 10)$sel)
+  })
+  expect_true(all(sapply(cores, function(core){all.equal(core, cores[[1]])})))
+})
+
+test_that("seed is respected (fast mode)", {
+  geno <- genotypeData()
+  cores <- lapply(1:5, function(i){
+    set.seed(42)
+    naturalsort(sampleCore(geno, size = 2, steps = 5000, mode = "fast")$sel)
+  })
+  expect_true(all(sapply(cores, function(core){all.equal(core, cores[[1]])})))
+})
+
+test_that("seed is respected (multi-objective, with normalization)", {
+  geno <- genotypeData()
+  obj <- list(
+    objective("EN", "MR"),
+    objective("AN", "CE")
+  )
+  cores <- lapply(1:5, function(i){
+    set.seed(42)
+    naturalsort(sampleCore(geno, obj, size = 2, steps = 10)$sel)
+  })
+  expect_true(all(sapply(cores, function(core){all.equal(core, cores[[1]])})))
+})
+
+test_that("seed is respected (multi-objective, no normalization)", {
+  geno <- genotypeData()
+  obj <- list(
+    objective("EN", "MR"),
+    objective("AN", "CE")
+  )
+  cores <- lapply(1:5, function(i){
+    set.seed(42)
+    naturalsort(sampleCore(geno, obj, size = 2, steps = 10, normalize = FALSE)$sel)
+  })
+  expect_true(all(sapply(cores, function(core){all.equal(core, cores[[1]])})))
+})
+
+test_that("fixed ids are respected", {
+
+  geno <- genotypeData(size = "small")
+
+  # 1: fix all core items
+
+  # on index
+  always <- 1:3
+  core <- sampleCore(geno, size = 3, time = 1, always.selected = always)
+  expect_equal(core$sel, c("Alice", "Bob", "Dave"))
+  # on id
+  always <- c("Alice", "Dave", "Bob")
+  core <- sampleCore(geno, size = 3, time = 1, always.selected = always)
+  expect_equal(core$sel, c("Alice", "Bob", "Dave"))
+
+  # 2: again by excluding others
+
+  # on index
+  never <- 4:5
+  core <- sampleCore(geno, size = 3, time = 1, never.selected = never)
+  expect_equal(core$sel, c("Alice", "Bob", "Dave"))
+  # on id
+  never <- c("Bob'", "Carol")
+  core <- sampleCore(geno, size = 3, time = 1, never.selected = never)
+  expect_equal(core$sel, c("Alice", "Bob", "Dave"))
+
+  # 3: fix some
+  always <- c(2,5)
+  core <- sampleCore(geno, size = 3, time = 1, always.selected = always)
+  expect_true("Dave" %in% core$sel)
+  expect_true("Carol" %in% core$sel)
+  ### again with A-NE objective
+  core <- sampleCore(geno, obj = objective("AN"), size = 3, time = 1, always.selected = always)
+  expect_true("Dave" %in% core$sel)
+  expect_true("Carol" %in% core$sel)
+
+  # 4: exclude some
+  never <- c(2,5)
+  core <- sampleCore(geno, size = 3, time = 1, never.selected = never)
+  expect_false("Dave" %in% core$sel)
+  expect_false("Carol" %in% core$sel)
+
+  # 5: fix and exclude one
+  always <- 1
+  never <- 2
+  core <- sampleCore(geno, size = 3, time = 1, always.selected = always, never.selected = never)
+  expect_true("Alice" %in% core$sel)
+  expect_false("Dave" %in% core$sel)
+
+  # 6: multi-objective with normalization
+  obj <- list(
+    objective("EN", "MR"),
+    objective("AN", "MR")
+  )
+  always <- c(2,5)
+  core <- sampleCore(geno, obj = obj, size = 3, time = 1, always.selected = always)
+  expect_true("Dave" %in% core$sel)
+  expect_true("Carol" %in% core$sel)
+
+  # 7: fast mode
+  always <- c(2,5)
+  core <- sampleCore(geno, size = 3, time = 1, always.selected = always, mode = "f")
+  expect_true("Dave" %in% core$sel)
+  expect_true("Carol" %in% core$sel)
+
+})
+
 test_that("core has expected class and elements", {
   data <- testData()
   # distances only

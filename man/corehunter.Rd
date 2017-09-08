@@ -64,4 +64,3 @@ core <- sampleCore(geno.pheno)
  \code{\link{sampleCore}}, \code{\link{evaluateCore}},
  \code{\link{objective}}
 }
-

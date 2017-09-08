@@ -2,11 +2,12 @@
 % Please edit documentation in R/execution.R
 \name{sampleCore}
 \alias{sampleCore}
-\title{Sample a core collection from the given data.}
+\title{Sample a core collection.}
 \usage{
-sampleCore(data, obj, size = 0.2, mode = c("default", "fast"),
-  normalize = TRUE, time = NA, impr.time = NA, indices = FALSE,
-  verbose = FALSE)
+sampleCore(data, obj, size = 0.2, always.selected = integer(0),
+  never.selected = integer(0), mode = c("default", "fast"),
+  normalize = TRUE, time = NA, impr.time = NA, steps = NA,
+  impr.steps = NA, indices = FALSE, verbose = FALSE)
 }
 \arguments{
 \item{data}{Core Hunter data (\code{chdata}) containing genotypes,
@@ -19,7 +20,7 @@ if only one type of data is provided.}
 If no objectives are specified Core Hunter maximizes a weighted
 index including the default entry-to-nearest-entry distance
 (\code{EN}) for each available data type, with equal weight.
-For genotyes, the Modified Roger's distance (\code{MR}) is
+For genotypes, the Modified Roger's distance (\code{MR}) is
 used. For phenotypes, Gower's distance (\code{GD}) is applied.}
 
 \item{size}{Desired core subset size (numeric). If larger than one the value
@@ -27,48 +28,86 @@ is used as the absolute core size after rounding. Else it is used as the
 sampling rate and multiplied with the dataset size to determine the size of
 the core. The default sampling rate is 0.2.}
 
+\item{always.selected}{vector with indices (integer) or ids (character) of
+items that should always be selected in the core collection}
+
+\item{never.selected}{vector with indices (integer) or ids (character) of
+items that should never be selected in the core collection}
+
 \item{mode}{Execution mode (\code{default} or \code{fast}). In default mode,
 Core Hunter uses an advanced parallel tempering search algorithm and terminates
 when no improvement is found for ten seconds. In fast mode, a simple stochastic
 hill-climbing algorithm is applied and Core Hunter terminates as soon as no
-improvement is made for two seconds. Stop conditions can be overriden with
+improvement is made for two seconds. Stop conditions can be overridden with
 arguments \code{time} and \code{impr.time}.}
 
-\item{normalize}{If \code{TRUE} (default) the applied objectives in a multi-objective
-configuration (two or more objectives) are automatically normalized prior to execution.
-Normalization requires an independent preliminary search per objective (simple stochastic
-hill-climber, executed in parallel). If a \code{time} limit or maximum time without
-finding an improvement (\code{impr.time}) have been set, the same limits are applied
-to each normalization search as well as the main multi-objective search. In case of a
-limited number of objectives the total execution time should usually not exceed twice
-the imposed search time limit, if any. Normalization ranges can also be precomputed
-(see \code{\link{getNormalizationRanges}}) or manually specified in the objectives
-to save computation time when sampling core collections. This is especially useful
-when multiple cores are sampled for the same objectives, with possibly varying weights.}
+\item{normalize}{If \code{TRUE} (default), the applied objectives in a multi-objective
+  configuration (two or more objectives) are automatically normalized prior to execution.
+  For single-objective configurations, this argument is ignored.
 
-\item{time}{Absolute runtime limit in seconds. Not used by default. If used
-it should be a strictly positive value and is rounded to the nearest integer.}
+  Normalization requires an independent preliminary search per objective (fast stochastic
+  hill-climber, executed in parallel for all objectives). The same stop conditions, as
+  specified for the main search, are also applied to each normalization search. In
+  \code{default} execution mode, however, any step-based stop conditions are multiplied
+  by 500 for the normalization searches, because in that case the main search (parallel
+  tempering) executes 500 stochastic hill-climbing steps per replica, in a single step
+  of the main search.
 
-\item{impr.time}{Maximum time without improvement in seconds. When set to
-\code{NA} a default value is set depending on the execution \code{mode}.
-If set to another value it should be strictly positive and is rounded
-to the nearest integer.}
+  Normalization ranges can also be precomputed (see \code{\link{getNormalizationRanges}})
+  or manually specified in the objectives to save computation time when sampling core
+  collections. This is especially useful when multiple cores are sampled for the same
+  objectives, with possibly varying weights.}
 
-\item{indices}{If \code{TRUE} the result contains the indices instead of unique
-identifiers (default) of the selected individuals.}
+\item{time}{Absolute runtime limit in seconds. Not used by default (\code{NA}).
+If used, it should be a strictly positive value, which is rounded to the
+nearest integer.}
 
-\item{verbose}{If \code{TRUE} search progress messages are printed to the console.
+\item{impr.time}{Maximum time without improvement in seconds. If no explicit
+stop conditions are specified, the maximum time without improvement defaults
+to ten or two seconds, when executing Core Hunter in \code{default} or
+\code{fast} mode, respectively. If a custom improvement time is specified,
+it should be strictly positive and is rounded to the nearest integer.}
+
+\item{steps}{Maximum number of search steps. Not used by default (\code{NA}).
+If used, it should be a strictly positive value, which is rounded
+to the nearest integer. The number of steps applies to the main
+search. Details of how this stop condition is transferred to
+normalization searches, in a multi-objective configuration, are
+provided in the description of the argument \code{normalize}.}
+
+\item{impr.steps}{Maximum number of steps without improvement. Not used by
+default (\code{NA}). If used, it should be a strictly
+positive value, which is rounded to the nearest integer.
+The maximum number of steps without improvement applies
+to the main search. Details of how this stop condition is
+transferred to normalization searches, in a multi-objective
+configuration, are provided in the description of the argument
+\code{normalize}.}
+
+\item{indices}{If \code{TRUE}, the result contains the indices instead of ids
+(default) of the selected individuals.}
+
+\item{verbose}{If \code{TRUE}, search progress messages are printed to the console.
 Defaults to \code{FALSE}.}
 }
 \value{
 Core subset (\code{chcore}). It has an element \code{sel}
- which is a character or numeric vector containing the ids or indices,
+ which is a character or numeric vector containing the sorted ids or indices,
  respectively, of the selected individuals (see argument \code{indices}).
  In addition the result has one or more elements that indicate the value
  of each objective function that was included in the optimization.
 }
 \description{
 Sample a core collection from the given data.
+}
+\details{
+Because Core Hunter uses stochastic algorithms, repeated runs may produce different
+results. To eliminate randomness, you may set a random number generation seed using
+\code{\link{set.seed}} prior to executing Core Hunter. In addition, when reproducible
+results are desired, it is advised to use step-based stop conditions instead of the
+(default) time-based criteria, because runtimes may be affected by external factors,
+and, therefore, a different number of steps may have been performed in repeated runs
+when using time-based stop conditions.
 }
 \examples{
 \donttest{
@@ -100,6 +139,7 @@ core <- sampleCore(data, obj = list(
 
 # custom stop conditions
 core <- sampleCore(data, obj, time = 5, impr.time = 2)
+core <- sampleCore(data, obj, steps = 300)
 
 # print progress messages
 core <- sampleCore(data, obj, verbose = TRUE)
@@ -109,4 +149,3 @@ core <- sampleCore(data, obj, verbose = TRUE)
 \seealso{
 \code{\link{coreHunterData}}, \code{\link{objective}}, \code{\link{getNormalizationRanges}}
 }
-

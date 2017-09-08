@@ -19,6 +19,9 @@
 #'         Selection Index to Real and Simulated Data",
 #'         \url{http://hdl.handle.net/11529/10199} V10
 #'
+#' @examples
+#' exampleData()
+#'
 #' @return Core Hunter data of class \code{chdata}
 #' @export
 exampleData <- function(){
@@ -137,6 +140,12 @@ print.chdata <- function(x, ...){
   cat("----------------\n\n")
 
   cat("Number of accessions =", x$size, "\n")
+  cat("Ids:")
+  str(x$ids)
+  if(!isTRUE(all.equal(x$ids, x$names))){
+    cat("Names:")
+    str(x$names)
+  }
 
   for(data.type in c("geno", "pheno", "dist")){
     if(!is.null(x[[data.type]])){
@@ -288,6 +297,12 @@ print.chdist <- function(x, include.size = TRUE, ...){
   cat("# Precomputed distance matrix\n")
   if(include.size){
     cat(sprintf("\nNumber of accessions = %d\n", n))
+    cat("Ids:")
+    str(x$ids)
+    if(!isTRUE(all.equal(x$ids, x$names))){
+      cat("Names:")
+      str(x$names)
+    }
   }
   if(!is.null(x$file)){
     cat(sprintf("\nRead from file: \"%s\"\n", x$file))
@@ -325,7 +340,7 @@ print.chdist <- function(x, include.size = TRUE, ...){
 #'      Numeric matrix or data frame. One row per individual (or bulk sample) and multiple
 #'      columns per marker. Data consists of allele frequencies, grouped per marker in
 #'      consecutive columns named after the corresponding marker, optionally extended
-#'      with an arbitrary suffix starting witha dot (\code{.}), dash (\code{-}) or
+#'      with an arbitrary suffix starting with a dot (\code{.}), dash (\code{-}) or
 #'      underscore (\code{_}) character.. The allele frequencies of each marker should
 #'      sum to one in each sample. Unique row names (item ids) are required.
 #'    }
@@ -505,7 +520,13 @@ genotypes <- function(data, alleles, file, format){
       }
 
       # create data
-      j.matrix <- .jarray(matrix(as.integer(data), nrow = nrow(data)), dispatch = TRUE)
+      missing.allele.score <- ch.constants()$MISSING_ALLELE_SCORE
+      j.matrix <- .jbyte(data)
+      missing <- is.na(j.matrix)
+      if(any(missing)){
+        j.matrix[missing] <- missing.allele.score
+      }
+      j.matrix <- .jarray(j.matrix, dispatch = TRUE)
       j.ids <- .jarray(rownames(data))
       j.names <- .jarray(names)
       marker.names <- colnames(data)
@@ -566,7 +587,7 @@ genotypes <- function(data, alleles, file, format){
       stop("Argument 'file' should be a file path (character).")
     }
     if(!file.exists(file)){
-      stop("File 'file' does not exist.")
+      stop("File '", file, "' does not exist.")
     }
     file <- normalizePath(file)
 
@@ -592,11 +613,22 @@ genotypes <- function(data, alleles, file, format){
 
   }
 
-  # obtain ids, names, marker names and allele names from Java object
+  # obtain ids, names and marker names from Java object
   ids <- api$getIds(j.data)
   names <- api$getNames(j.data)
   markers <- api$getMarkerNames(j.data)
-  alleles <- lapply(.jevalArray(api$getAlleles(j.data)), .jevalArray)
+  # obtain allele names per marker from Java object
+  alleles <- .jevalArray(api$getAlleles(j.data), simplify = TRUE)
+  # convert to list of vectors
+  if(is.list(alleles)){
+    # different number of alleles per marker
+    alleles <- lapply(alleles, as.vector)
+  } else {
+    # same number of alleles for each marker
+    alleles <- split(t(alleles), rep(1:nrow(alleles), each = ncol(alleles)))
+  }
+  # assign marker names to alleles (if specified)
+  names(alleles) <- NULL
   if(!all(is.na(markers))){
     names(alleles) <- markers
   }
@@ -675,14 +707,29 @@ print.chgeno <- function(x, include.size = TRUE, ...){
               as.character(a[1]),
               sprintf("%d-%d", a[1], a[2])
   )
-  cat("# Genotypes\n\n")
+
+  cat("# Genotypes\n")
+
+  cat(sprintf("\nFormat = %s\n", x$format))
+
   if(include.size){
-    cat(sprintf("Number of accessions = %d\n", n))
+    cat(sprintf("\nNumber of accessions = %d\n", n))
+    cat("Ids:")
+    str(x$ids)
+    if(!isTRUE(all.equal(x$ids, x$names))){
+      cat("Names:")
+      str(x$names)
+    }
   }
-  cat(sprintf("Number of markers = %d", m),
-      sprintf("Number of alleles per marker = %s", a),
-      sprintf("Format = %s", x$format),
-      sep = "\n")
+
+  cat(sprintf("\nNumber of markers = %d\n", m))
+  if(!all(is.na(x$markers))){
+    cat("Marker names:")
+    str(x$markers)
+  }
+
+  cat(sprintf("Number of alleles per marker = %s\n", a))
+
   if(!is.null(x$file)){
     cat(sprintf("\nRead from file: \"%s\"\n", x$file))
   }
@@ -704,7 +751,7 @@ print.chgeno <- function(x, include.size = TRUE, ...){
 #'   to some or all individuals.
 #'
 #' @param types Variable types (optional).
-#'   Vector of characters of length one or two.
+#'   Vector of characters, each of length one or two.
 #'   Ignored when reading from file.
 #'
 #'   The first letter indicates the scale type and should be one of \code{N} (nominal),
@@ -724,12 +771,12 @@ print.chgeno <- function(x, include.size = TRUE, ...){
 #'   Unordered \code{factor} columns are converted to \code{character} and also
 #'   treated as string encoded nominals. Ordered factors are converted to
 #'   integer encoded interval variables (\code{I}) as described below.
-#'   Columns of type \code{logical} are taken to be assymetric binary variables (\code{NB}).
+#'   Columns of type \code{logical} are taken to be asymmetric binary variables (\code{NB}).
 #'   Finally, \code{integer} and more broadly \code{numeric} columns are treated as integer
 #'   encoded interval variables (\code{I}) and double encoded ratio variables (\code{R}),
 #'   respectively.
 #'
-#'   Boolean encoded nominals (\code{NB}) are treated as assymetric binary variables.
+#'   Boolean encoded nominals (\code{NB}) are treated as asymmetric binary variables.
 #'   For symmetric binary variables just use the default string encoding (\code{N}
 #'   or \code{NS}). Other nominal variables are converted to factors.
 #'
@@ -817,7 +864,7 @@ phenotypes <- function(data, types, min, max, file){
       stop("Variable types are required.")
     }
     # drop type, min, max
-    data <- data[!(rownames(data) %in% c("TYPE", "MIN", "MAX")), ]
+    data <- data[!(rownames(data) %in% c("TYPE", "MIN", "MAX")), , drop = FALSE]
     # convert columns accordingly
     for(c in 1:ncol(data)){
       data[[c]] <- convert.column(data[[c]], types[c])
@@ -1030,23 +1077,45 @@ convert.column <- function(col, type){
 #' @export
 print.chpheno <- function(x, include.size = TRUE, ...){
   n <- x$size
+  traits <- colnames(x$data)
   types <- x$types
-  m <- length(types)
+  m <- length(traits)
   scales <- sapply(types, substr, 1, 1)
-  # count number of qualitative traits (nominal)
-  m.qual <- sum(scales == "N")
-  # count number of quantitative traits (ordinal, interval, ratio)
-  m.quan <- sum(scales %in% c("O", "I", "R"))
+  # find qualitative traits (nominal)
+  qual <- traits[which(scales == "N")]
+  # find quantitative traits (ordinal, interval, ratio)
+  quan <- traits[which(scales %in% c("O", "I", "R"))]
 
-  cat("# Phenotypes\n\n")
+  cat("# Phenotypes\n")
+
   if(include.size){
-    cat(sprintf("Number of accessions = %d\n", n))
+    cat(sprintf("\nNumber of accessions = %d\n", n))
+    cat("Ids:")
+    str(x$ids)
+    if(!isTRUE(all.equal(x$ids, x$names))){
+      cat("Names:")
+      str(x$names)
+    }
   }
 
-  cat(sprintf("Number of traits = %d", m),
-      sprintf("Number of qualitative traits = %d", m.qual),
-      sprintf("Number of quantitative traits = %d", m.quan),
-      sep = "\n")
+  format.traits <- function(traits){
+    if(length(traits) > 0){
+      # wrap in double quotes
+      traits <- sprintf('"%s"', traits)
+      # collapse
+      traits <- paste(traits, collapse = " ")
+    } else {
+      traits <- "n/a"
+    }
+    return(traits)
+  }
+
+  cat(sprintf("\nNumber of traits = %d\n", m))
+  cat(sprintf("Traits: %s\n", format.traits(traits)))
+
+  cat(sprintf("Quantitative traits: %s\n", format.traits(quan)))
+  cat(sprintf("Qualitative traits: %s\n", format.traits(qual)))
+
   if(!is.null(x$file)){
     cat(sprintf("\nRead from file: \"%s\"\n", x$file))
   }
@@ -1070,15 +1139,20 @@ print.chpheno <- function(x, include.size = TRUE, ...){
 #'
 #' @importFrom utils read.delim
 #' @export
-read.autodelim <- function(file, row.names = 1, check.names = FALSE, stringsAsFactors = FALSE,
-                           strip.white = TRUE, quote = "'\"", ...){
+read.autodelim <- function(file, quote = "'\"",
+                           row.names = 1,
+                           na.strings = "",
+                           check.names = FALSE,
+                           strip.white = TRUE,
+                           stringsAsFactors = FALSE,
+                           ...){
   sep <- switch(tolower(tools::file_ext(file)),
                 "csv" = ",",
                 "txt" = "\t")
-  read.delim(file, sep = sep,
-             row.names = row.names, check.names = check.names,
-             stringsAsFactors = stringsAsFactors, strip.white = strip.white,
-             quote = quote, ...)
+  read.delim(file, sep = sep, quote = quote,
+             row.names = row.names, na.string = na.strings, check.names = check.names,
+             strip.white = strip.white, stringsAsFactors = stringsAsFactors,
+             ...)
 }
 
 # ----------------- #

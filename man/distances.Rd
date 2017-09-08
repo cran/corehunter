@@ -47,4 +47,3 @@ dist.file <- system.file("extdata", "distances.csv", package = "corehunter")
 dist <- distances(file = dist.file)
 
 }
-

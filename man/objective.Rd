@@ -76,14 +76,14 @@ The following optimization objectives are supported by Core Hunter:
    regardless of the locus (marker) where to which the allele belongs. Requires genotypes.
  }
  \item{\code{HE}}{
-   Expected proportion of heterozygous loci. Maximizes the expected proportion of heterzygous
+   Expected proportion of heterozygous loci. Maximizes the expected proportion of heterozygous
    loci in offspring produced from random crossings within the selected core. In contrast to
    Shannon's index (\code{SH}) this objective treats each marker (locus) with equal importance,
    regardless of the number of possible alleles for that marker. Requires genotypes.
  }
  \item{\code{CV}}{
    Allele coverage. Maximizes the proportion of alleles observed in the full dataset that are
-   retained in the selected core. Requires genotoypes.
+   retained in the selected core. Requires genotypes.
  }
 }
 The first three objective types (\code{EN}, \code{AN} and \code{EE}) aggregate pairwise distances
@@ -115,4 +115,3 @@ objective("AN", "MR", weight = 0.5, range = c(0.150, 0.300))
 \seealso{
 \code{\link{getNormalizationRanges}}, \code{\link{setRange}}
 }
-

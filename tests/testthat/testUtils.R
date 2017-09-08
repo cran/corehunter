@@ -69,7 +69,7 @@ getIds <- function(size = c("default", "small")){
   if(size == "default"){
     ids <- as.character(1:218)
   } else {
-    ids <- c("Alice", "Dave", "Bob-1", "Bob-2", "Carol")
+    ids <- c("Alice", "Dave", "Bob", "Bob'", "Carol")
   }
   return(ids)
 }
@@ -132,7 +132,7 @@ getMarkerNames <- function(size = c("default", "small")){
   if(size == "default"){
     names <- paste("M", 1:190, sep = "")
   } else {
-    names <- c("mk1", "mk2", "mk3", "mk4")
+    names <- c("mk1", "mk,2", "mk'3", "mk4")
   }
   return(names)
 }

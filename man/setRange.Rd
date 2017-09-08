@@ -21,4 +21,3 @@ See argument \code{range} of \code{\link{objective}} for details.
 \seealso{
 \code{\link{objective}}
 }
-

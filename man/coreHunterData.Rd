@@ -48,4 +48,3 @@ my.data <- coreHunterData(
 \seealso{
 \code{\link{genotypes}}, \code{\link{phenotypes}}, \code{\link{distances}}
 }
-

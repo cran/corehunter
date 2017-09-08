@@ -39,4 +39,3 @@ evaluateCore(core, data, objective("HE"))
 \seealso{
 \code{\link{coreHunterData}}, \code{\link{objective}}
 }
-

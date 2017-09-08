@@ -13,7 +13,7 @@ The data frame may optionally include a first column \code{NAME} used to assign 
 to some or all individuals.}
 
 \item{types}{Variable types (optional).
-  Vector of characters of length one or two.
+  Vector of characters, each of length one or two.
   Ignored when reading from file.
 
   The first letter indicates the scale type and should be one of \code{N} (nominal),
@@ -33,12 +33,12 @@ to some or all individuals.}
   Unordered \code{factor} columns are converted to \code{character} and also
   treated as string encoded nominals. Ordered factors are converted to
   integer encoded interval variables (\code{I}) as described below.
-  Columns of type \code{logical} are taken to be assymetric binary variables (\code{NB}).
+  Columns of type \code{logical} are taken to be asymmetric binary variables (\code{NB}).
   Finally, \code{integer} and more broadly \code{numeric} columns are treated as integer
   encoded interval variables (\code{I}) and double encoded ratio variables (\code{R}),
   respectively.
 
-  Boolean encoded nominals (\code{NB}) are treated as assymetric binary variables.
+  Boolean encoded nominals (\code{NB}) are treated as asymmetric binary variables.
   For symmetric binary variables just use the default string encoding (\code{N}
   or \code{NS}). Other nominal variables are converted to factors.
 
@@ -108,4 +108,3 @@ pheno.file <- system.file("extdata", "phenotypes.csv", package = "corehunter")
 pheno <- phenotypes(file = pheno.file)
 
 }
-

@@ -4,8 +4,9 @@
 \alias{getNormalizationRanges}
 \title{Determine normalization ranges of all objectives in a multi-objective configuration.}
 \usage{
-getNormalizationRanges(data, obj, size = 0.2, mode = c("default", "fast"),
-  time = NA, impr.time = NA)
+getNormalizationRanges(data, obj, size = 0.2, always.selected = integer(0),
+  never.selected = integer(0), mode = c("default", "fast"), time = NA,
+  impr.time = NA, steps = NA, impr.steps = NA)
 }
 \arguments{
 \item{data}{Core Hunter data (\code{chdata}) containing genotypes,
@@ -17,7 +18,7 @@ if only one type of data is provided.}
 If no objectives are specified Core Hunter maximizes a weighted
 index including the default entry-to-nearest-entry distance
 (\code{EN}) for each available data type.
-For genotyes, the Modified Roger's distance (\code{MR}) is
+For genotypes, the Modified Roger's distance (\code{MR}) is
 used. For phenotypes, Gower's distance (\code{GD}) is applied.}
 
 \item{size}{Desired core subset size (numeric). If larger than one the value
@@ -25,19 +26,43 @@ is used as the absolute core size after rounding. Else it is used as the
 sampling rate and multiplied with the dataset size to determine the size of
 the core. The default sampling rate is 0.2.}
 
+\item{always.selected}{vector with indices (integer) or ids (character) of
+items that should always be selected in the core collection}
+
+\item{never.selected}{vector with indices (integer) or ids (character) of
+items that should never be selected in the core collection}
+
 \item{mode}{Execution mode (\code{default} or \code{fast}). In default mode,
 the normalization searches terminate when no improvement is found for ten
-seconds. In fast mode, searches terminated as soon as no improvement is
-made for two seconds. Stop conditions can be overriden with arguments
-\code{time} and \code{impr.time}.}
+seconds. In fast mode, searches terminate as soon as no improvement is
+made for two seconds. These stop conditions can be overridden using arguments
+\code{time}, \code{impr.time}, \code{steps} and/or \code{impr.steps}. In
+\code{default} mode, the value of the latter two, step-based conditions is
+multiplied with 500, in line with the behaviour of \code{\link{sampleCore}}
+when executed in \code{default} mode.}
 
-\item{time}{Absolute runtime limit in seconds. Not used by default. If used
-it should be a strictly positive value and is rounded to the nearest integer.}
+\item{time}{Absolute runtime limit in seconds. Not used by default (\code{NA}).
+If used, it should be a strictly positive value, which is rounded to the
+nearest integer.}
 
-\item{impr.time}{Maximum time without improvement in seconds. When set to
-\code{NA} a default value is set depending on the execution \code{mode}.
-If set to another value it should be strictly positive and is rounded
-to the nearest integer.}
+\item{impr.time}{Maximum time without improvement in seconds. If no explicit
+stop conditions are specified, the maximum time without improvement defaults
+to ten or two seconds, when executing Core Hunter in \code{default} or
+\code{fast} mode, respectively. If a custom improvement time is specified,
+it should be strictly positive and is rounded to the nearest integer.}
+
+\item{steps}{Maximum number of search steps. Not used by default (\code{NA}).
+If used, it should be a strictly positive value, which is rounded
+to the nearest integer. In \code{default} mode, the value is
+multiplied with 500, in line with the behaviour of
+\code{\link{sampleCore}} when executed in \code{default} mode.}
+
+\item{impr.steps}{Maximum number of steps without improvement. Not used by
+default (\code{NA}). If used, it should be a strictly
+positive value, which is rounded to the nearest integer.
+In \code{default} mode, the value is multiplied with 500,
+in line with the behaviour of \code{\link{sampleCore}}
+when executed in \code{default} mode.}
 }
 \value{
 Numeric matrix with one row per objective and two columns:
@@ -47,14 +72,25 @@ Numeric matrix with one row per objective and two columns:
 }
 }
 \description{
-Executes an independent stochastic hill-climbing search per objective (in parallel) to
-approximate the optimal solution for each objective from which a suitable normalization
-range is inferred based on the Pareto minima/maxima. For an objective that is being maximized,
-the upper bound is set to the value of the best solution for that objective, while
-the lower bound is set to the Pareto minimum, i.e. the minimum value obtained when
-evaluating all optimal solutions with the considered objective. For an objective that
-is being minimized, the roles of upper and lower bound are interchanged, and the
-Pareto maximum is used instead.
+Executes an independent stochastic hill-climbing search (random descent) per objective
+to approximate the optimal solution for each objective, from which a suitable normalization
+range is inferred based on the Pareto minima/maxima. These normalization searches are
+executed in parallel.
+}
+\details{
+For an objective that is being maximized, the upper bound is set to the value of the best
+solution for that objective, while the lower bound is set to the Pareto minimum, i.e. the
+minimum value obtained when evaluating all optimal solutions (for each single objective)
+with the considered objective. For an objective that is being minimized, the roles of
+upper and lower bound are interchanged, and the Pareto maximum is used instead.
+
+Because Core Hunter uses stochastic algorithms, repeated runs may produce different
+results. To eliminate randomness, you may set a random number generation seed using
+\code{\link{set.seed}} prior to executing Core Hunter. In addition, when reproducible
+results are desired, it is advised to use step-based stop conditions instead of the
+(default) time-based criteria, because runtimes may be affected by external factors,
+and, therefore, a different number of steps may have been performed in repeated runs
+when using time-based stop conditions.
 }
 \examples{
 \donttest{
@@ -74,4 +110,3 @@ core <- sampleCore(data, obj = objectives)
 \seealso{
 \code{\link{coreHunterData}}, \code{\link{objective}}
 }
-

@@ -4,14 +4,24 @@
 
 #' Determine normalization ranges of all objectives in a multi-objective configuration.
 #'
-#' Executes an independent stochastic hill-climbing search per objective (in parallel) to
-#' approximate the optimal solution for each objective from which a suitable normalization
-#' range is inferred based on the Pareto minima/maxima. For an objective that is being maximized,
-#' the upper bound is set to the value of the best solution for that objective, while
-#' the lower bound is set to the Pareto minimum, i.e. the minimum value obtained when
-#' evaluating all optimal solutions with the considered objective. For an objective that
-#' is being minimized, the roles of upper and lower bound are interchanged, and the
-#' Pareto maximum is used instead.
+#' Executes an independent stochastic hill-climbing search (random descent) per objective
+#' to approximate the optimal solution for each objective, from which a suitable normalization
+#' range is inferred based on the Pareto minima/maxima. These normalization searches are
+#' executed in parallel.
+#'
+#' For an objective that is being maximized, the upper bound is set to the value of the best
+#' solution for that objective, while the lower bound is set to the Pareto minimum, i.e. the
+#' minimum value obtained when evaluating all optimal solutions (for each single objective)
+#' with the considered objective. For an objective that is being minimized, the roles of
+#' upper and lower bound are interchanged, and the Pareto maximum is used instead.
+#'
+#' Because Core Hunter uses stochastic algorithms, repeated runs may produce different
+#' results. To eliminate randomness, you may set a random number generation seed using
+#' \code{\link{set.seed}} prior to executing Core Hunter. In addition, when reproducible
+#' results are desired, it is advised to use step-based stop conditions instead of the
+#' (default) time-based criteria, because runtimes may be affected by external factors,
+#' and, therefore, a different number of steps may have been performed in repeated runs
+#' when using time-based stop conditions.
 #'
 #' @param data Core Hunter data (\code{chdata}) containing genotypes,
 #'   phenotypes and/or a precomputed distance matrix. Can also be an
@@ -21,23 +31,43 @@
 #'   If no objectives are specified Core Hunter maximizes a weighted
 #'   index including the default entry-to-nearest-entry distance
 #'   (\code{EN}) for each available data type.
-#'   For genotyes, the Modified Roger's distance (\code{MR}) is
+#'   For genotypes, the Modified Roger's distance (\code{MR}) is
 #'   used. For phenotypes, Gower's distance (\code{GD}) is applied.
 #' @param size Desired core subset size (numeric). If larger than one the value
 #'   is used as the absolute core size after rounding. Else it is used as the
 #'   sampling rate and multiplied with the dataset size to determine the size of
 #'   the core. The default sampling rate is 0.2.
+#' @param always.selected vector with indices (integer) or ids (character) of
+#'   items that should always be selected in the core collection
+#' @param never.selected vector with indices (integer) or ids (character) of
+#'   items that should never be selected in the core collection
 #' @param mode Execution mode (\code{default} or \code{fast}). In default mode,
 #'   the normalization searches terminate when no improvement is found for ten
-#'   seconds. In fast mode, searches terminated as soon as no improvement is
-#'   made for two seconds. Stop conditions can be overriden with arguments
-#'   \code{time} and \code{impr.time}.
-#' @param time Absolute runtime limit in seconds. Not used by default. If used
-#'   it should be a strictly positive value and is rounded to the nearest integer.
-#' @param impr.time Maximum time without improvement in seconds. When set to
-#'   \code{NA} a default value is set depending on the execution \code{mode}.
-#'   If set to another value it should be strictly positive and is rounded
-#'   to the nearest integer.
+#'   seconds. In fast mode, searches terminate as soon as no improvement is
+#'   made for two seconds. These stop conditions can be overridden using arguments
+#'   \code{time}, \code{impr.time}, \code{steps} and/or \code{impr.steps}. In
+#'   \code{default} mode, the value of the latter two, step-based conditions is
+#'   multiplied with 500, in line with the behaviour of \code{\link{sampleCore}}
+#'   when executed in \code{default} mode.
+#' @param time Absolute runtime limit in seconds. Not used by default (\code{NA}).
+#'   If used, it should be a strictly positive value, which is rounded to the
+#'   nearest integer.
+#' @param impr.time Maximum time without improvement in seconds. If no explicit
+#'   stop conditions are specified, the maximum time without improvement defaults
+#'   to ten or two seconds, when executing Core Hunter in \code{default} or
+#'   \code{fast} mode, respectively. If a custom improvement time is specified,
+#'   it should be strictly positive and is rounded to the nearest integer.
+#' @param steps Maximum number of search steps. Not used by default (\code{NA}).
+#'              If used, it should be a strictly positive value, which is rounded
+#'              to the nearest integer. In \code{default} mode, the value is
+#'              multiplied with 500, in line with the behaviour of
+#'              \code{\link{sampleCore}} when executed in \code{default} mode.
+#' @param impr.steps Maximum number of steps without improvement. Not used by
+#'                   default (\code{NA}). If used, it should be a strictly
+#'                   positive value, which is rounded to the nearest integer.
+#'                   In \code{default} mode, the value is multiplied with 500,
+#'                   in line with the behaviour of \code{\link{sampleCore}}
+#'                   when executed in \code{default} mode.
 #'
 #' @return Numeric matrix with one row per objective and two columns:
 #' \describe{
@@ -64,23 +94,34 @@
 #' @import rJava
 #' @importFrom methods is
 #' @export
-getNormalizationRanges <- function(data, obj, size = 0.2, mode = c("default", "fast"),
-                                   time = NA, impr.time = NA){
+getNormalizationRanges <- function(data, obj, size = 0.2,
+                                   always.selected = integer(0),
+                                   never.selected = integer(0),
+                                   mode = c("default", "fast"),
+                                   time = NA, impr.time = NA,
+                                   steps = NA, impr.steps = NA){
 
   # check mode
   mode <- match.arg(mode)
   # check and process stop conditions
-  time <- checkTime(time, "Time limit")
-  impr.time <- checkTime(impr.time, "Maximum time without improvement")
+  time <- checkTimeOrSteps(time, "Time limit")
+  impr.time <- checkTimeOrSteps(impr.time, "Maximum time without improvement")
+  steps <- checkTimeOrSteps(steps, "Maximum number of search steps")
+  impr.steps <- checkTimeOrSteps(impr.steps, "Maximum number of steps without improvement")
 
   # check objectives or set default
   obj <- defaultObjectives(data, obj)
   # create arguments
-  j.args <- createArguments(data, obj, size, normalize = TRUE)
+  j.args <- createArguments(data, obj, size, always.selected, never.selected, normalize = TRUE)
 
   # run Core Hunter normalization
   api <- ch.api()
-  ranges <- .jevalArray(api$getNormalizationRanges(j.args, mode, time, impr.time), simplify = TRUE)
+  ranges <- .jevalArray(
+    api$getNormalizationRanges(j.args, mode,
+                               time, impr.time, .jlong(steps), .jlong(impr.steps),
+                               genSeed()),
+    simplify = TRUE
+  )
   obj.ids <- sapply(obj, function(o){
     id <- o$type
     if(!is.null(o$meas)){
@@ -96,7 +137,17 @@ getNormalizationRanges <- function(data, obj, size = 0.2, mode = c("default", "f
 
 }
 
+#' Sample a core collection.
+#'
 #' Sample a core collection from the given data.
+#'
+#' Because Core Hunter uses stochastic algorithms, repeated runs may produce different
+#' results. To eliminate randomness, you may set a random number generation seed using
+#' \code{\link{set.seed}} prior to executing Core Hunter. In addition, when reproducible
+#' results are desired, it is advised to use step-based stop conditions instead of the
+#' (default) time-based criteria, because runtimes may be affected by external factors,
+#' and, therefore, a different number of steps may have been performed in repeated runs
+#' when using time-based stop conditions.
 #'
 #' @param data Core Hunter data (\code{chdata}) containing genotypes,
 #'   phenotypes and/or a precomputed distance matrix. Typically the
@@ -107,42 +158,67 @@ getNormalizationRanges <- function(data, obj, size = 0.2, mode = c("default", "f
 #'   If no objectives are specified Core Hunter maximizes a weighted
 #'   index including the default entry-to-nearest-entry distance
 #'   (\code{EN}) for each available data type, with equal weight.
-#'   For genotyes, the Modified Roger's distance (\code{MR}) is
+#'   For genotypes, the Modified Roger's distance (\code{MR}) is
 #'   used. For phenotypes, Gower's distance (\code{GD}) is applied.
 #' @param size Desired core subset size (numeric). If larger than one the value
 #'   is used as the absolute core size after rounding. Else it is used as the
 #'   sampling rate and multiplied with the dataset size to determine the size of
 #'   the core. The default sampling rate is 0.2.
+#' @param always.selected vector with indices (integer) or ids (character) of
+#'   items that should always be selected in the core collection
+#' @param never.selected vector with indices (integer) or ids (character) of
+#'   items that should never be selected in the core collection
 #' @param mode Execution mode (\code{default} or \code{fast}). In default mode,
 #'   Core Hunter uses an advanced parallel tempering search algorithm and terminates
 #'   when no improvement is found for ten seconds. In fast mode, a simple stochastic
 #'   hill-climbing algorithm is applied and Core Hunter terminates as soon as no
-#'   improvement is made for two seconds. Stop conditions can be overriden with
+#'   improvement is made for two seconds. Stop conditions can be overridden with
 #'   arguments \code{time} and \code{impr.time}.
-#' @param normalize If \code{TRUE} (default) the applied objectives in a multi-objective
+#' @param normalize If \code{TRUE} (default), the applied objectives in a multi-objective
 #'   configuration (two or more objectives) are automatically normalized prior to execution.
-#'   Normalization requires an independent preliminary search per objective (simple stochastic
-#'   hill-climber, executed in parallel). If a \code{time} limit or maximum time without
-#'   finding an improvement (\code{impr.time}) have been set, the same limits are applied
-#'   to each normalization search as well as the main multi-objective search. In case of a
-#'   limited number of objectives the total execution time should usually not exceed twice
-#'   the imposed search time limit, if any. Normalization ranges can also be precomputed
-#'   (see \code{\link{getNormalizationRanges}}) or manually specified in the objectives
-#'   to save computation time when sampling core collections. This is especially useful
-#'   when multiple cores are sampled for the same objectives, with possibly varying weights.
-#' @param time Absolute runtime limit in seconds. Not used by default. If used
-#'   it should be a strictly positive value and is rounded to the nearest integer.
-#' @param impr.time Maximum time without improvement in seconds. When set to
-#'   \code{NA} a default value is set depending on the execution \code{mode}.
-#'   If set to another value it should be strictly positive and is rounded
-#'   to the nearest integer.
-#' @param indices If \code{TRUE} the result contains the indices instead of unique
-#'   identifiers (default) of the selected individuals.
-#' @param verbose If \code{TRUE} search progress messages are printed to the console.
+#'   For single-objective configurations, this argument is ignored.
+#'
+#'   Normalization requires an independent preliminary search per objective (fast stochastic
+#'   hill-climber, executed in parallel for all objectives). The same stop conditions, as
+#'   specified for the main search, are also applied to each normalization search. In
+#'   \code{default} execution mode, however, any step-based stop conditions are multiplied
+#'   by 500 for the normalization searches, because in that case the main search (parallel
+#'   tempering) executes 500 stochastic hill-climbing steps per replica, in a single step
+#'   of the main search.
+#'
+#'   Normalization ranges can also be precomputed (see \code{\link{getNormalizationRanges}})
+#'   or manually specified in the objectives to save computation time when sampling core
+#'   collections. This is especially useful when multiple cores are sampled for the same
+#'   objectives, with possibly varying weights.
+#' @param time Absolute runtime limit in seconds. Not used by default (\code{NA}).
+#'   If used, it should be a strictly positive value, which is rounded to the
+#'   nearest integer.
+#' @param impr.time Maximum time without improvement in seconds. If no explicit
+#'   stop conditions are specified, the maximum time without improvement defaults
+#'   to ten or two seconds, when executing Core Hunter in \code{default} or
+#'   \code{fast} mode, respectively. If a custom improvement time is specified,
+#'   it should be strictly positive and is rounded to the nearest integer.
+#' @param steps Maximum number of search steps. Not used by default (\code{NA}).
+#'              If used, it should be a strictly positive value, which is rounded
+#'              to the nearest integer. The number of steps applies to the main
+#'              search. Details of how this stop condition is transferred to
+#'              normalization searches, in a multi-objective configuration, are
+#'              provided in the description of the argument \code{normalize}.
+#' @param impr.steps Maximum number of steps without improvement. Not used by
+#'                   default (\code{NA}). If used, it should be a strictly
+#'                   positive value, which is rounded to the nearest integer.
+#'                   The maximum number of steps without improvement applies
+#'                   to the main search. Details of how this stop condition is
+#'                   transferred to normalization searches, in a multi-objective
+#'                   configuration, are provided in the description of the argument
+#'                   \code{normalize}.
+#' @param indices If \code{TRUE}, the result contains the indices instead of ids
+#'   (default) of the selected individuals.
+#' @param verbose If \code{TRUE}, search progress messages are printed to the console.
 #'   Defaults to \code{FALSE}.
 #'
 #' @return Core subset (\code{chcore}). It has an element \code{sel}
-#'  which is a character or numeric vector containing the ids or indices,
+#'  which is a character or numeric vector containing the sorted ids or indices,
 #'  respectively, of the selected individuals (see argument \code{indices}).
 #'  In addition the result has one or more elements that indicate the value
 #'  of each objective function that was included in the optimization.
@@ -177,6 +253,7 @@ getNormalizationRanges <- function(data, obj, size = 0.2, mode = c("default", "f
 #'
 #' # custom stop conditions
 #' core <- sampleCore(data, obj, time = 5, impr.time = 2)
+#' core <- sampleCore(data, obj, steps = 300)
 #'
 #' # print progress messages
 #' core <- sampleCore(data, obj, verbose = TRUE)
@@ -187,13 +264,19 @@ getNormalizationRanges <- function(data, obj, size = 0.2, mode = c("default", "f
 #' @import rJava naturalsort
 #' @importFrom methods is
 #' @export
-sampleCore <- function(data, obj, size = 0.2, mode = c("default", "fast"), normalize = TRUE,
-                       time = NA, impr.time = NA, indices = FALSE, verbose = FALSE){
+sampleCore <- function(data, obj, size = 0.2,
+                       always.selected = integer(0), never.selected = integer(0),
+                       mode = c("default", "fast"), normalize = TRUE,
+                       time = NA, impr.time = NA,
+                       steps = NA, impr.steps = NA,
+                       indices = FALSE, verbose = FALSE){
   # check mode
   mode <- match.arg(mode)
   # check and process stop conditions
-  time <- checkTime(time, "Time limit")
-  impr.time <- checkTime(impr.time, "Maximum time without improvement")
+  time <- checkTimeOrSteps(time, "Time limit")
+  impr.time <- checkTimeOrSteps(impr.time, "Maximum time without improvement")
+  steps <- checkTimeOrSteps(steps, "Maximum number of search steps")
+  impr.steps <- checkTimeOrSteps(impr.steps, "Maximum number of steps without improvement")
 
   # check logicals
   if(!is.logical(normalize)){
@@ -209,11 +292,13 @@ sampleCore <- function(data, obj, size = 0.2, mode = c("default", "fast"), norma
   # check objectives or set default
   obj <- defaultObjectives(data, obj)
   # create arguments
-  j.args <- createArguments(data, obj, size, normalize)
+  j.args <- createArguments(data, obj, size, always.selected, never.selected, normalize)
 
   # run Core Hunter
   api <- ch.api()
-  sel <- api$sampleCore(j.args, mode, time, impr.time, !verbose)
+  sel <- api$sampleCore(j.args, mode,
+                        time, impr.time, .jlong(steps), .jlong(impr.steps),
+                        genSeed(), !verbose)
   if(indices){
     sel <- toRIndices(sel)
   } else {
@@ -245,19 +330,19 @@ sampleCore <- function(data, obj, size = 0.2, mode = c("default", "fast"), norma
 
 }
 
-checkTime <- function(time, description){
-  if(!is.na(time)){
-    if(!is.numeric(time)){
+checkTimeOrSteps <- function(value, description){
+  if(!is.na(value)){
+    if(!is.numeric(value)){
       stop(sprintf("%s should be numeric.", description))
     }
-    time <- as.integer(round(time))
-    if(time <= 0){
-      stop(sprintf("%s should positive a number (seconds).", description))
+    value <- as.integer(round(value))
+    if(value <= 0){
+      stop(sprintf("%s should be a positive number.", description))
     }
   } else {
-    time <- as.integer(-1)
+    value <- as.integer(-1)
   }
-  return(time)
+  return(value)
 }
 
 defaultObjectives <- function(data, obj){
@@ -292,7 +377,10 @@ defaultObjectives <- function(data, obj){
   return(obj)
 }
 
-createArguments <- function(data, obj, size, normalize){
+createArguments <- function(data, obj, size,
+                            always.selected,
+                            never.selected,
+                            normalize){
 
   # wrap and check data class
   data <- wrapData(data)
@@ -309,18 +397,46 @@ createArguments <- function(data, obj, size, normalize){
     stop(sprintf("Core 'size' should be >= 2 and < %d (dataset size). Got: %d.", n, size))
   }
 
+  # init API
+  api <- ch.api()
+
+  # check always/never selected and convert to Java indices
+  convert <- function(subset){
+    if(is.character(subset)){
+      ind <- api$getIndicesFromIds(data$java, .jarray(subset))
+    } else if(is.integer(subset) || (is.numeric(subset) && all(subset == as.integer(subset)))){
+      ind <- toJavaIndices(subset)
+    } else {
+      stop("Arguments 'always.selected' and 'never.selected' ",
+           "should be of type integer (indices) or character (ids).")
+    }
+    return(ind)
+  }
+  always.selected <- convert(always.selected)
+  never.selected <- convert(never.selected)
+
   # convert objectives to Java objects
   j.obj <- ch.objectives(obj)
 
   # create Core Hunter arguments
-  api <- ch.api()
   j.data <- data$java
   j.size <- as.integer(size)
   j.obj.array <- .jarray(j.obj, contents.class = ch.obj()@name)
-  j.args <- api$createArguments(j.data, j.size, j.obj.array, normalize)
+  j.always.selected <- .jarray(always.selected)
+  j.never.selected <- .jarray(never.selected)
+  j.args <- api$createArguments(
+    j.data, j.size, j.obj.array,
+    j.always.selected, j.never.selected,
+    normalize
+  )
 
   return(j.args)
 
+}
+
+#' @importFrom stats runif
+genSeed <- function(){
+  .jlong(ceiling(runif(1, 0, 2^31-1)))
 }
 
 # ---------- #
@@ -359,14 +475,14 @@ createArguments <- function(data, obj, size, normalize){
 #'    regardless of the locus (marker) where to which the allele belongs. Requires genotypes.
 #'  }
 #'  \item{\code{HE}}{
-#'    Expected proportion of heterozygous loci. Maximizes the expected proportion of heterzygous
+#'    Expected proportion of heterozygous loci. Maximizes the expected proportion of heterozygous
 #'    loci in offspring produced from random crossings within the selected core. In contrast to
 #'    Shannon's index (\code{SH}) this objective treats each marker (locus) with equal importance,
 #'    regardless of the number of possible alleles for that marker. Requires genotypes.
 #'  }
 #'  \item{\code{CV}}{
 #'    Allele coverage. Maximizes the proportion of alleles observed in the full dataset that are
-#'    retained in the selected core. Requires genotoypes.
+#'    retained in the selected core. Requires genotypes.
 #'  }
 #' }
 #' The first three objective types (\code{EN}, \code{AN} and \code{EE}) aggregate pairwise distances

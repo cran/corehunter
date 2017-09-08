@@ -16,4 +16,3 @@ Core Hunter data of class \code{chdata}
 If the given data does not match any of these three classes
 it is returned unchanged.
 }
-
