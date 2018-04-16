@@ -70,9 +70,21 @@ toRIndices <- function(indices){
 # ------------------ #
 
 java.version <- function(){
-  version.string <- J("java.lang.System")$getProperty("java.version")
-  version <- as.integer(strsplit(version.string, ".", fixed = TRUE)[[1]][2])
+  version.string <- java.version.string()
+  if(startsWith(version.string, "1.")){
+    # JDK <= 8
+    version <- as.integer(strsplit(version.string, ".", fixed = TRUE)[[1]][2])
+  } else {
+    # JDK 9+
+    short.version.string <- strsplit(version.string, "[-+]")[[1]][1]
+    version <- as.integer(strsplit(short.version.string, ".", fixed = TRUE)[[1]][1])
+  }
   return(version)
+}
+
+java.version.string <- function(){
+  version.string <- J("java.lang.System")$getProperty("java.version")
+  return(version.string)
 }
 
 

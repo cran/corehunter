@@ -1,12 +1,12 @@
-483f9d1934b727c0d6ce7777af6ab3ff *DESCRIPTION
+bd11c7381d69cff20eac9af6daff3527 *DESCRIPTION
 c4fc4442beafe40aeb7ff636dd500182 *LICENSE
 e3e8e953fbaf3c61cdad1912f585c3c3 *NAMESPACE
-62cc552506a064a3de45d27988aa6f68 *NEWS.md
+b512d243aa5eaf42d5770ef32236c8ba *NEWS.md
 a9c43abfa094ec6745265fdd35c6ff22 *R/analysis.R
 a3ab854e6dfd327611671bb354a8908f *R/corehunter.R
 bc490219ede38b63bad2ab5134ee2231 *R/data.R
 ffeff4ddec6ef50d1a4200632930f2d0 *R/execution.R
-948519f55ef2915cdaa65a7d201e4adb *R/java.R
+fec47280d98183157c9c1af2c8f36359 *R/java.R
 4bdceefe03f8040d9540552737543a90 *R/zzz.R
 7c7fb3cdbe2d8a518d6e3bc2726da6f6 *README.md
 89f192de0dfff8e5df2e25c640b23d20 *inst/extdata/distances.csv
@@ -33,7 +33,7 @@ a05a4ca15c84e975f6907ed2abcad753 *man/phenotypes.Rd
 0a0c378de7d0ddb329c6f5195fca3f20 *man/sampleCore.Rd
 29478f64dfbfb1ea02a0de28ac50afa1 *man/setRange.Rd
 f7888bec13ce8c23cfe63554d0ef2879 *man/wrapData.Rd
-1afbfb95b9a7a90bbb428d6fa0341588 *tests/test.R
+befb26cdbc041134a617be96d362e79d *tests/test.R
 a3a72a01b242aa47c5c56668c5ad9397 *tests/testthat/data/distances-small.txt
 47403132f821f919d4960461b6e2005e *tests/testthat/data/genotypes-bi-small.csv
 620a09f80706f3ecefa3c065b28b69ef *tests/testthat/data/genotypes-freq-small.csv
@@ -45,4 +45,5 @@ b46d201686c5e97ad1963ebde1c263ad *tests/testthat/data/phenotypes-small.csv
 9e525ea1a53f98a5cb482c5dcf7c356c *tests/testthat/testAnalysis.R
 52227b450ee374e8bf3a3b8a86d4ddc9 *tests/testthat/testData.R
 a553ba325d8b4d820f353895cbb88c72 *tests/testthat/testExecution.R
+5fc4b19e14a48134ff2869e76a7c1d4c *tests/testthat/testJava.R
 0f8051ee1745c00d3d5bc9a288030054 *tests/testthat/testUtils.R

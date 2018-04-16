@@ -1,7 +1,7 @@
 Package: corehunter
 Title: Multi-Purpose Core Subset Selection
-Version: 3.2.0
-Date: 2017-09-08
+Version: 3.2.1
+Date: 2018-04-16
 Authors@R: c(person("Herman", "De Beukelaer", email = "herman.debeukelaer@gmail.com", role = c("aut", "cre")),
              person("Guy", "Davenport", email = "daveneti@gmail.com", role = "aut"),
              person("Veerle", "Fack", email = "veerle.fack@ugent.be", role = "ths"))
@@ -20,13 +20,13 @@ SystemRequirements: Java JRE 8 or higher
 License: MIT + file LICENSE
 LazyData: true
 RoxygenNote: 6.0.1
-Suggests: testthat, StatMatch
+Suggests: testthat, mockr, StatMatch
 Encoding: UTF-8
 NeedsCompilation: no
-Packaged: 2017-09-08 11:55:42 UTC; hermandebeukelaer
+Packaged: 2018-04-16 19:05:42 UTC; hermandebeukelaer
 Author: Herman De Beukelaer [aut, cre],
   Guy Davenport [aut],
   Veerle Fack [ths]
 Maintainer: Herman De Beukelaer <herman.debeukelaer@gmail.com>
 Repository: CRAN
-Date/Publication: 2017-09-08 12:07:45 UTC
+Date/Publication: 2018-04-16 19:17:55 UTC
