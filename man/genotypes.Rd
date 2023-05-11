@@ -35,7 +35,7 @@ depending on the chosen format:
   In case a data frame is provided, an optional first column \code{NAME}
   may be included to specify item names. The remaining columns should follow
   the format as described above.
-  See \url{www.corehunter.org} for more details about the supported genotype formats.
+  See \url{https://www.corehunter.org} for more details about the supported genotype formats.
   Note that both the \code{frequency} and \code{biparental} format syntactically also
   comply with the \code{default} format but with different semantics, meaning that it
   is very important to specify the correct format. Some checks have been built in that
@@ -79,10 +79,11 @@ Genotype data of class \code{chgeno} with elements
 }
 \description{
 Specify either a data frame or matrix, or a file from which to read the genotypes.
-See \url{www.corehunter.org} for documentation and examples of the genotype data
+See \url{https://www.corehunter.org} for documentation and examples of the genotype data
 file format used by Core Hunter.
 }
 \examples{
+\dontrun{
 # create from data frame or matrix
 
 # default format
@@ -134,5 +135,6 @@ geno <- genotypes(file = geno.file, format = "biparental")
 # frequencies
 geno.file <- system.file("extdata", "genotypes-frequency.csv", package = "corehunter")
 geno <- genotypes(file = geno.file, format = "frequency")
+}
 
 }

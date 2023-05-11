@@ -4,8 +4,16 @@
 \alias{read.autodelim}
 \title{Read delimited file.}
 \usage{
-read.autodelim(file, quote = "'\\"", row.names = 1, na.strings = "",
-  check.names = FALSE, strip.white = TRUE, stringsAsFactors = FALSE, ...)
+read.autodelim(
+  file,
+  quote = "'\\"",
+  row.names = 1,
+  na.strings = "",
+  check.names = FALSE,
+  strip.white = TRUE,
+  stringsAsFactors = FALSE,
+  ...
+)
 }
 \arguments{
 \item{file}{File path.}
@@ -34,8 +42,8 @@ read.autodelim(file, quote = "'\\"", row.names = 1, na.strings = "",
 \item{na.strings}{a character vector of strings which are to be
     interpreted as \code{\link{NA}} values.  Blank fields are also
     considered to be missing values in logical, integer, numeric and
-    complex fields.  Note that the test happens \emph{after} 
-    white space is stripped from the input, so \code{na.strings} 
+    complex fields.  Note that the test happens \emph{after}
+    white space is stripped from the input, so \code{na.strings}
     values may need their own white space stripped in advance.}
 
 \item{check.names}{logical.  If \code{TRUE} then the names of the

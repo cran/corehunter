@@ -1,6 +1,11 @@
 Core Hunter 3
 =============
 
+Version 3.2.2 (02/05/2023)
+--------------------------
+
+ - Standardized minimal Java version (>= 8) in system requirements.
+
 Version 3.2.1 (16/04/2018)
 --------------------------
 

@@ -28,7 +28,7 @@ Distance matrix data of class \code{chdist} with elements
 }
 \description{
 Specify either a symmetric distance matrix or the file from which to read the matrix.
-See \url{www.corehunter.org} for documentation and examples of the distance matrix
+See \url{https://www.corehunter.org} for documentation and examples of the distance matrix
 file format used by Core Hunter.
 }
 \examples{

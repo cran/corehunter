@@ -3,7 +3,6 @@
 \docType{package}
 \name{corehunter}
 \alias{corehunter}
-\alias{corehunter-package}
 \title{Core Hunter 3}
 \description{
 Core Hunter is a tool to sample diverse, representative subsets from large germplasm

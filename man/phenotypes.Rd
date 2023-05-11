@@ -82,7 +82,7 @@ Phenotype data of class \code{chpheno} with elements
 }
 \description{
 Specify either a data frame containing the phenotypic trait observations
-or a file from which to read the data. See \url{www.corehunter.org} for
+or a file from which to read the data. See \url{https://www.corehunter.org} for
 documentation and examples of the phenotype data format used by Core Hunter.
 }
 \examples{

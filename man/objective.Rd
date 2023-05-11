@@ -4,8 +4,12 @@
 \alias{objective}
 \title{Create Core Hunter objective.}
 \usage{
-objective(type = c("EN", "AN", "EE", "SH", "HE", "CV"), measure = c("MR",
-  "CE", "GD", "PD"), weight = 1, range = NULL)
+objective(
+  type = c("EN", "AN", "EE", "SH", "HE", "CV"),
+  measure = c("MR", "CE", "GD", "PD"),
+  weight = 1,
+  range = NULL
+)
 }
 \arguments{
 \item{type}{Objective type, one of \code{EN} (default), \code{AN}, \code{EE},

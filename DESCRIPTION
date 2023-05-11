@@ -1,7 +1,7 @@
 Package: corehunter
 Title: Multi-Purpose Core Subset Selection
-Version: 3.2.1
-Date: 2018-04-16
+Version: 3.2.2
+Date: 2023-05-02
 Authors@R: c(person("Herman", "De Beukelaer", email = "herman.debeukelaer@gmail.com", role = c("aut", "cre")),
              person("Guy", "Davenport", email = "daveneti@gmail.com", role = "aut"),
              person("Veerle", "Fack", email = "veerle.fack@ugent.be", role = "ths"))
@@ -16,17 +16,16 @@ Description: Core Hunter is a tool to sample diverse, representative subsets fro
     <http://www.corehunter.org>).
 Depends: R (>= 3.2.3), rJava (>= 0.9-8)
 Imports: naturalsort (>= 0.1.2), methods
-SystemRequirements: Java JRE 8 or higher
+SystemRequirements: Java (>= 8)
 License: MIT + file LICENSE
-LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 7.2.3
 Suggests: testthat, mockr, StatMatch
 Encoding: UTF-8
 NeedsCompilation: no
-Packaged: 2018-04-16 19:05:42 UTC; hermandebeukelaer
+Packaged: 2023-05-11 15:37:31 UTC; herman.de.beukelaer
 Author: Herman De Beukelaer [aut, cre],
   Guy Davenport [aut],
   Veerle Fack [ths]
 Maintainer: Herman De Beukelaer <herman.debeukelaer@gmail.com>
 Repository: CRAN
-Date/Publication: 2018-04-16 19:17:55 UTC
+Date/Publication: 2023-05-11 15:50:02 UTC

@@ -4,10 +4,21 @@
 \alias{sampleCore}
 \title{Sample a core collection.}
 \usage{
-sampleCore(data, obj, size = 0.2, always.selected = integer(0),
-  never.selected = integer(0), mode = c("default", "fast"),
-  normalize = TRUE, time = NA, impr.time = NA, steps = NA,
-  impr.steps = NA, indices = FALSE, verbose = FALSE)
+sampleCore(
+  data,
+  obj,
+  size = 0.2,
+  always.selected = integer(0),
+  never.selected = integer(0),
+  mode = c("default", "fast"),
+  normalize = TRUE,
+  time = NA,
+  impr.time = NA,
+  steps = NA,
+  impr.steps = NA,
+  indices = FALSE,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{data}{Core Hunter data (\code{chdata}) containing genotypes,

@@ -3,13 +3,12 @@
 ### Latest release
 
 [![CRAN version](http://www.r-pkg.org/badges/version/corehunter)](https://CRAN.R-project.org/package=corehunter)
-[![Coverage Status](http://img.shields.io/coveralls/corehunter/corehunter3-r/master.svg)](https://coveralls.io/r/corehunter/corehunter3-r)
-[![Build Status](https://img.shields.io/travis/corehunter/corehunter3-r/master.svg)](https://travis-ci.org/corehunter/corehunter3-r)
+![Build Status](https://github.com/corehunter/corehunter3-r/actions/workflows/check-standard.yaml/badge.svg)
+
 
 ### Development snapshot
 
-[![Coverage Status](http://img.shields.io/coveralls/corehunter/corehunter3-r/develop.svg)](https://coveralls.io/r/corehunter/corehunter3-r)
-[![Build Status](https://img.shields.io/travis/corehunter/corehunter3-r/develop.svg)](https://travis-ci.org/corehunter/corehunter3-r)
+![Build Status](https://github.com/corehunter/corehunter3-r/actions/workflows/check-standard.yaml/badge.svg?branch=develop)
 
 Core Hunter is a tool to sample diverse, representative subsets from large germplasm collections, with minimum redundancy. Such so-called core collections have applications in plant breeding and genetic resource management in general. Core Hunter can construct cores based on genetic marker data, phenotypic traits or precomputed distance matrices, optimizing one of many provided evaluation measures depending on the precise purpose of the core (e.g. high diversity, representativeness, or allelic richness). In addition, multiple measures can be simultaneously optimized as part of a weighted index to bring the different perspectives closer together. The Core Hunter library is implemented in Java 8 as an open source project (see 
 <http://www.corehunter.org>).

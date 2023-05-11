@@ -4,9 +4,18 @@
 \alias{getNormalizationRanges}
 \title{Determine normalization ranges of all objectives in a multi-objective configuration.}
 \usage{
-getNormalizationRanges(data, obj, size = 0.2, always.selected = integer(0),
-  never.selected = integer(0), mode = c("default", "fast"), time = NA,
-  impr.time = NA, steps = NA, impr.steps = NA)
+getNormalizationRanges(
+  data,
+  obj,
+  size = 0.2,
+  always.selected = integer(0),
+  never.selected = integer(0),
+  mode = c("default", "fast"),
+  time = NA,
+  impr.time = NA,
+  steps = NA,
+  impr.steps = NA
+)
 }
 \arguments{
 \item{data}{Core Hunter data (\code{chdata}) containing genotypes,

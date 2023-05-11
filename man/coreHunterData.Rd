@@ -34,6 +34,7 @@ All provided data should describe the same individuals which is verified by comp
 the item ids and names.
 }
 \examples{
+\dontrun{
 geno.file <- system.file("extdata", "genotypes.csv", package = "corehunter")
 pheno.file <- system.file("extdata", "phenotypes.csv", package = "corehunter")
 dist.file <- system.file("extdata", "distances.csv", package = "corehunter")
@@ -43,6 +44,7 @@ my.data <- coreHunterData(
   phenotypes(file = pheno.file),
   distances(file = dist.file)
 )
+}
 
 }
 \seealso{
