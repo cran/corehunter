@@ -1,6 +1,11 @@
 Core Hunter 3
 =============
 
+Version 3.2.3 (31/08/2023)
+--------------------------
+
+ - Fixed broken package documentation due to Roxygen breaking change
+
 Version 3.2.2 (02/05/2023)
 --------------------------
 

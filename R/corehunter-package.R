@@ -10,6 +10,8 @@
 #' The Core Hunter library is implemented in Java 8 as an open source project
 #' (see \url{http://www.corehunter.org}).
 #'
+#' @keywords internal
+#'
 #' @examples
 #' \dontrun{
 #' # sample core based on genetic marker data (default format)
@@ -56,6 +58,8 @@
 #'  \code{\link{sampleCore}}, \code{\link{evaluateCore}},
 #'  \code{\link{objective}}
 #'
-#' @docType package
-#' @name corehunter
+"_PACKAGE"
+
+## usethis namespace: start
+## usethis namespace: end
 NULL

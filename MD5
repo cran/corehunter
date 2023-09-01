@@ -1,9 +1,9 @@
-d60487017af03909350c565e0498afa2 *DESCRIPTION
+3155850dde456fade16c369af6dc6c2b *DESCRIPTION
 32d7d838315cb53249dcfabdfb3f72d5 *LICENSE
 ada0e7f7a4a66f2a4bf72162151d2a71 *NAMESPACE
-c310ee9791698f4b13796c5e227e8f2f *NEWS.md
+3b946c46a58977b71ec76f2b48f01b56 *NEWS.md
 db00346629d3a6ea2dc2af0414896a56 *R/analysis.R
-c6f756b005921fec2c2ae4d25c9385d1 *R/corehunter.R
+05529858084b61209a2e30f4083c1cae *R/corehunter-package.R
 3bf1901464bc74822935960c5a5cee2b *R/data.R
 6fa72b3dde3239def048cedc167a4f71 *R/execution.R
 82019d84ad3a333baf02ec38f85026a2 *R/java.R
@@ -20,7 +20,7 @@ a5c6f63712cc3707a645a8b69dd5b71b *inst/java/NOTICE
 8ec8cb5a171faaafe321c6d8bb141027 *inst/java/slf4j-nop-1.7.21.jar
 8f3ecce79b49601bce7397b94ffcf0d5 *java/README.txt
 ad1dcd434533cf19a1b48b750f3e4015 *man/coreHunterData.Rd
-8854bae75fce6ecf449b180bb6d23774 *man/corehunter.Rd
+8cfeac2a244b78ede9387e0e9d914bd3 *man/corehunter-package.Rd
 82bc1d0767e881ed90abd5a340dd6444 *man/distances.Rd
 edb37d5a2f683fe623a4fd3dfd880cec *man/evaluateCore.Rd
 5a4a5534f1729b3c6642ceac48e849b5 *man/exampleData.Rd
@@ -44,6 +44,6 @@ b46d201686c5e97ad1963ebde1c263ad *tests/testthat/data/phenotypes-small.csv
 144f2d3cc66b0a3039de6d21aae06654 *tests/testthat/data/phenotypes-unknown-type.csv
 148826e73c2cfcc4ab70a4a822b034de *tests/testthat/testAnalysis.R
 03bbf58d547f84c1e70fdc5714996929 *tests/testthat/testData.R
-ea70b4995e2b491993835c0e586245ff *tests/testthat/testExecution.R
+78f02244937c538829e3b43130068dbc *tests/testthat/testExecution.R
 5538cab2595d3de85f4f604ae322016a *tests/testthat/testJava.R
 2e51492205f1c1212c591588d2061335 *tests/testthat/testUtils.R
